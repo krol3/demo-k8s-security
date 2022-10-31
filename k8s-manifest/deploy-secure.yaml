@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+
+kind: Deployment
+metadata:
+  name: nginx-deployment
+  labels:
+    app: nginx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      hostPID: false
+      hostIPC: false
+      hostNetwork: false
+      hostPorts: false
+      automountServiceAccountToken: false
+      securityContext:
+        runAsUser: 10000
+        runAsGroup: 10000
+        runAsNonRoot: false
+        privileged: false
+        readOnlyRootFilesystem: true
+        capabilities:
+          drop: [all]
+          add: [NET_BIND_SERVICE]
+        allowPrivilegeEscalation: false
+      containers:
+        - name: nginx
+          image: nginx:1.14.2
+         #imagePullPolicy: IfNotPresent # By Default
+          imagePullPolicy: Always # Recommended
+          securityContext:
+            readOnlyRootFilesystem: true
+            privileged: false
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: [all]
+              add: [NET_BIND_SERVICE]
+          ports:
+            - containerPort: 80
+          resources:
+            limits:
+              memory: 200Mi
+              cpu: 100m
+            requests:
+              cpu: 100m
+              memory: 200Mi
